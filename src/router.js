@@ -1,14 +1,14 @@
 import Vue from "vue";
 import Router from "vue-router";
 import Home from "./views/Home.vue";
+import Login from "./views/Login.vue";
 
 Vue.use(Router);
 
-export default new Router({
+var router = new Router({
   routes: [
     {
-      path: "/",
-      name: "home",
+      path: "/home",
       component: Home
     },
     {
@@ -19,6 +19,23 @@ export default new Router({
       // which is lazy-loaded when the route is visited.
       component: () =>
         import(/* webpackChunkName: "about" */ "./views/About.vue")
+    },
+    {
+      path: "/login",
+      component: Login
     }
   ]
 });
+
+//路由守卫
+router.beforeEach((to, from, next) => {
+  // to and from are both route objects. must call `next`.
+  var token = window.sessionStorage.getItem("token");
+
+  if (token === null && to.path !== "/login") {
+    return next("/login");
+  }
+
+  next();
+});
+export default router;
